@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block titulo %}Catálogo — Tienda Online{% endblock %}
+
+{% block content %}
+    <!-- Encabezado de la página -->
+    <div class="row mb-5 text-center text-md-start align-items-md-center py-4 bg-light rounded-3 px-4 shadow-sm border-0">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-dark mb-2">Explora nuestro Catálogo</h1>
+            <p class="text-muted fs-5 mb-0">Encuentra los mejores productos físicos, digitales y perecederos con descuentos automáticos.</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <span class="badge bg-dark px-3 py-2 fs-6 shadow-sm">{{ productos|length }} Artículos disponibles</span>
+        </div>
+    </div>
+
+    <!-- Rejilla de productos -->
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-sm-6 col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden transition-hover" style="transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                
+                <!-- Contenedor de Imagen con Insignia de tipo -->
+                <div class="position-relative overflow-hidden bg-light" style="height: 220px;">
+                    <span class="position-absolute top-0 start-0 m-3 badge {% if producto.tipo == 'fisico' %}bg-info{% elif producto.tipo == 'digital' %}bg-purple text-white{% else %}bg-warning text-dark{% endif %} text-uppercase px-2.5 py-1.5 shadow-sm fw-bold tracking-wider fs-7" style="z-index: 2; font-size: 0.75rem;">
+                        {{ producto.tipo }}
+                    </span>
+                    
+                    {% if loop.index == 1 %}
+                        <img src="{{ url_for('static', filename='uploads/default.jpg') }}" class="w-100 h-100 img-zoom" alt="{{ producto.nombre }}" style="object-fit: cover;">
+                    {% elif loop.index == 2 %}
+                        <img src="{{ url_for('static', filename='uploads/curso.jpg') }}" class="w-100 h-100 img-zoom" alt="{{ producto.nombre }}" style="object-fit: cover;">
+                    {% elif loop.index == 3 %}
+                        <img src="{{ url_for('static', filename='uploads/default 2.jpg') }}" class="w-100 h-100 img-zoom" alt="{{ producto.nombre }}" style="object-fit: cover;">
+                    {% elif loop.index == 4 %}
+                        <img src="{{ url_for('static', filename='uploads/default 3.jpg') }}" class="w-100 h-100 img-zoom" alt="{{ producto.nombre }}" style="object-fit: cover;">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='uploads/' + (producto.imagen if producto.imagen else 'default.jpg')) }}" class="w-100 h-100 img-zoom" alt="{{ producto.nombre }}" style="object-fit: cover;">
+                    {% endif %}
+                </div>
+
+                <!-- Cuerpo de la tarjeta -->
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="card-title fw-bold text-dark mb-1 text-truncate" title="{{ producto.nombre }}">{{ producto.nombre }}</h5>
+                        <p class="text-muted small mb-3">Ref: <span class="font-monospace text-uppercase">{{ producto.codigo }}</span></p>
+                        
+                        <div class="d-flex align-items-baseline gap-2 mb-4">
+                            <span class="fs-3 fw-extrabold text-primary">${{ "%.2f"|format(producto.precio_final()) }}</span>
+                            {% if producto.precio_base > producto.precio_final() %}
+                                <span class="text-decoration-line-through text-muted small">${{ "%.2f"|format(producto.precio_base) }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Botonera -->
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('detalle_producto', producto_id=producto.id) }}" class="btn btn-outline-primary fw-medium rounded-2 py-2">
+                            🔍 Ver Detalles
+                        </a>
+                        {% if session.get('usuario_rol') == 'cliente' %}
+                        <form action="{{ url_for('agregar_carrito', producto_id=producto.id) }}" method="POST" class="d-grid">
+                            <button type="submit" class="btn btn-success fw-medium rounded-2 py-2">
+                                🛒 Añadir al Carrito
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="p-5 bg-light rounded-3 border">
+                <p class="fs-4 text-muted mb-0">No se encontraron productos cargados en la base de datos.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pequeño bloque de estilos extra para añadir animaciones fluidas -->
+    <style>
+        .bg-purple { background-color: #6f42c1; }
+        .fw-extrabold { font-weight: 800; }
+        .transition-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.12)!important;
+        }
+        .img-zoom { transition: transform .3s ease; }
+        .transition-hover:hover .img-zoom { transform: scale(1.05); }
+    </style>
+{% endblock %}

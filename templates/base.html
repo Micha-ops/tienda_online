@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Tienda Online{% endblock %}</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN MODERNA Y FIJA -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-opacity-95 shadow-sm sticky-top" style="background-color: #1a252f;">
+        <div class="container py-1">
+            <a class="navbar-brand fw-bold fs-4 text-uppercase" href="{{ url_for('inicio') }}">
+                <span class="text-primary">🛒</span> Tienda<span class="text-primary">Online</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-3 fw-medium text-white" href="{{ url_for('inicio') }}">Catálogo</a>
+                    </li>
+                    
+                    <!-- MENÚ SOLO VISIBLE PARA EL ADMINISTRADOR -->
+                    {% if session.get('usuario_id') and session.get('usuario_rol') == 'admin' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle btn btn-sm btn-outline-light text-white px-3 mt-1 mt-lg-0" href="#" role="button" data-bs-toggle="dropdown">
+                            ⚙️ Panel Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark border-0 shadow mt-2">
+                            <li><a class="dropdown-item" href="{{ url_for('nuevo_producto_fisico') }}">📦 + Producto Físico</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('nuevo_producto_digital') }}">💾 + Producto Digital</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('nuevo_producto_perecible') }}">🍓 + Producto Perecible</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    {% if session.get('usuario_id') %}
+                        <!-- MENÚ SOLO VISIBLE PARA EL CLIENTE -->
+                        {% if session.get('usuario_rol') == 'cliente' %}
+                        <li class="nav-item me-2">
+                            <a class="btn btn-primary btn-sm position-relative px-3 rounded-pill" href="{{ url_for('ver_carrito') }}">
+                                🛍️ Mi carrito
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ session.get('carrito', {})|length }}
+                                </span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- DATOS DEL USUARIO LOGUEADO -->
+                        <li class="nav-item">
+                            <span class="nav-link text-white-50">
+                                👤 <span class="text-white fw-medium">{{ session.get('usuario_nombre') }}</span>
+                                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25 ms-1">{{ session.get('usuario_rol') }}</span>
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-sm btn-outline-danger px-3 rounded-pill" href="{{ url_for('logout') }}">Cerrar sesión</a>
+                        </li>
+                    {% else %}
+                        <!-- ENLACES CUANDO NO HAY SESIÓN INICIADA -->
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{{ url_for('login') }}">Iniciar sesión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm px-3 rounded-pill text-white fw-medium" href="{{ url_for('registro') }}">Registrarse</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENEDOR PRINCIPAL CON MENSAJES FLASH -->
+    <div class="container mt-4">
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                {% for categoria, texto in mensajes %}
+                    <div class="alert alert-{{ categoria }} alert-dismissible fade show shadow-sm" role="alert">
+                        {{ texto }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

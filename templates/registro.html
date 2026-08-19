@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block titulo %}Crear Cuenta{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="mb-4">Crear Cuenta</h2>
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" name="nombre" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" name="password"
+                                   minlength="6" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Registrarme</button>
+                    </form>
+
+                    <p class="text-center mt-3 mb-0">
+                        ¿Ya tienes cuenta?
+                        <a href="{{ url_for('login') }}">Inicia sesión</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

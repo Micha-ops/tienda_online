@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block titulo %}Nuevo Producto Perecible{% endblock %}
+{% block content %}
+    <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary mb-3">← Volver al catálogo</a>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="mb-4">🍓 Nuevo Producto Perecible</h2>
+            
+            <!-- 1. SE AGREGÓ EL ENCTYPE PARA EL MANEJO DE ARCHIVOS -->
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Código</label>
+                    <input type="text" class="form-control" name="codigo" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" class="form-control" name="nombre" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Precio base ($)</label>
+                        <input type="number" step="0.01" class="form-control" name="precio_base" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Stock inicial</label>
+                        <input type="number" class="form-control" name="stock" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Días para vencer</label>
+                    <input type="number" class="form-control" name="dias_para_vencer" required>
+                    <small class="text-muted d-block mt-1">3 días o menos = 50% descuento · 7 días o menos = 20% descuento</small>
+                </div>
+
+                <!-- 2. NUEVO CAMPO PARA CARGAR LA IMAGEN -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Imagen del Producto</label>
+                    <input type="file" class="form-control" name="imagen" accept="image/*">
+                    <div class="form-text">Opcional. Formatos permitidos: JPG, PNG, GIF.</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Crear producto</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

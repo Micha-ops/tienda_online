@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ producto.nombre }} — Tienda Online{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary mb-3">← Volver al catálogo</a>
+
+    <div class="card shadow-sm">
+        <div class="row g-0">
+            <!-- COLUMNA IZQUIERDA: IMAGEN COINCIDENTE -->
+            <div class="col-md-5 bg-light d-flex align-items-center justify-content-center" style="min-height: 300px;">
+                {% if producto.codigo == 'FIS001' %}
+                    <img src="{{ url_for('static', filename='uploads/default.jpg') }}" class="img-fluid rounded-start" alt="{{ producto.nombre }}" style="max-height: 400px; object-fit: cover; width: 100%; height: 100%;">
+                <!-- Busca esta línea en templates/detalle.html y cámbiala por esta: -->
+                {% elif producto.codigo == 'DIG001' %}
+                    <img src="{{ url_for('static', filename='uploads/curso.jpg') }}" 
+                        class="img-fluid rounded-start" alt="{{ producto.nombre }}" style="max-height: 400px; object-fit: cover; width: 100%; height: 100%;">
+                {% elif producto.codigo == 'PER001' %}
+                    <img src="{{ url_for('static', filename='uploads/default 2.jpg') }}" class="img-fluid rounded-start" alt="{{ producto.nombre }}" style="max-height: 400px; object-fit: cover; width: 100%; height: 100%;">
+                {% elif producto.codigo == '120626' or producto.nombre == 'GTA VII' %}
+                    <img src="{{ url_for('static', filename='uploads/default 3.jpg') }}" class="img-fluid rounded-start" alt="{{ producto.nombre }}" style="max-height: 400px; object-fit: cover; width: 100%; height: 100%;">
+                {% else %}
+                    <!-- Imagen de respaldo para futuros nuevos productos -->
+                    <img src="{{ url_for('static', filename='uploads/' + (producto.imagen if producto.imagen else 'default.jpg')) }}" class="img-fluid rounded-start" alt="{{ producto.nombre }}" style="max-height: 400px; object-fit: cover; width: 100%; height: 100%;">
+                {% endif %}
+            </div>
+
+            <!-- COLUMNA DERECHA: INFORMACIÓN DEL PRODUCTO -->
+            <div class="col-md-7">
+                <div class="card-body h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="badge bg-secondary mb-2">{{ producto.tipo|capitalize }}</span>
+                        <h1 class="card-title h2 mb-1">{{ producto.nombre }}</h1>
+                        <p class="text-muted mb-3">Código: {{ producto.codigo }}</p>
+                        <p class="fs-2 fw-bold text-primary mb-3">${{ "%.2f"|format(producto.precio_final()) }}</p>
+                        <p class="mb-2"><strong>Stock disponible:</strong> {{ producto.stock }} unidades</p>
+
+                        {% if producto.tipo == "fisico" %}
+                            <hr>
+                            <h5>📦 Detalles de envío</h5>
+                            <p class="mb-0">Peso: {{ producto.peso_kg }} kg</p>
+                        {% elif producto.tipo == "digital" %}
+                            <hr>
+                            <h5>🔑 Detalles de licencia</h5>
+                            <p class="mb-0">Tipo de licencia: {{ producto.licencia|capitalize }}</p>
+                        {% elif producto.tipo == "perecible" %}
+                            <hr>
+                            <h5>⏳ Detalles de vencimiento</h5>
+                            <p class="mb-0">Días para vencer: {{ producto.dias_para_vencer }} días</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <!-- ========================================== -->
+                        <!-- ACCIONES DEL CLIENTE                       -->
+                        <!-- ========================================== -->
+                        {% if session.get('usuario_rol') == 'cliente' %}
+                            <hr>
+                            <form action="{{ url_for('agregar_carrito', producto_id=producto.id) }}" method="POST">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">🛍️ Agregar al carrito</button>
+                            </form>
+                        {% endif %}
+
+                        <!-- ========================================== -->
+                        <!-- ACCIONES DEL ADMIN                         -->
+                        <!-- ========================================== -->
+                        {% if session.get('usuario_rol') == 'admin' %}
+                            <hr>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('editar_producto', producto_id=producto.id) }}" class="btn btn-warning flex-grow-1">
+                                    ✏️ Editar Producto
+                                </a>
+                                <form action="{{ url_for('eliminar_producto', producto_id=producto.id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres desactivar este producto?');" class="flex-grow-1">
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        🗑️ Desactivar
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

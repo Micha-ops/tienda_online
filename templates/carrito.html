@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block titulo %}Mi Carrito{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary mb-3">← Seguir comprando</a>
+
+    <h1 class="mb-4">🛍️ Mi Carrito</h1>
+
+    {% if items %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio unitario</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        {{ item.producto.nombre }}
+                        <span class="badge bg-secondary">{{ item.producto.tipo }}</span>
+                    </td>
+                    <td>${{ "%.2f"|format(item.producto.precio_final()) }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td class="fw-bold">${{ "%.2f"|format(item.subtotal) }}</td>
+                    <td>
+                        <form action="{{ url_for('eliminar_carrito', producto_id=item.producto.id) }}" method="POST">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-end">
+            <div class="card" style="width: 20rem;">
+                <div class="card-body">
+                    <h4 class="d-flex justify-content-between">
+                        <span>Total:</span>
+                        <span>${{ "%.2f"|format(total) }}</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-muted">Tu carrito está vacío. Ve al catálogo y agrega algún producto.</p>
+    {% endif %}
+{% endblock %}
